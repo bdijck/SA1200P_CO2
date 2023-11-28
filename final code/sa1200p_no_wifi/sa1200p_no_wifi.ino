@@ -2,10 +2,31 @@
 #include <BME280I2C.h>
 #include <Wire.h>
 
+// web update
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h>
+#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
+#include <ESP8266HTTPUpdateServer.h>
+
+#ifndef STASSID
+#define STASSID "DijckNoyens_24G"
+#define STAPSK "f3sBas7cTVU7CTSu"
+#endif
+
+const char* host = "esp8266-bob-webupdate";
+const char* ssid = STASSID;
+const char* password = STAPSK;
+
+ESP8266WebServer httpServer(80);
+ESP8266HTTPUpdateServer httpUpdater;
+
+
 #define SERIAL_BAUD 115200
 
 BME280I2C bme;    // Default : forced mode, standby time = 1000 ms
                   // Oversampling = pressure ×1, temperature ×1, humidity ×1, filter off,
+float temp(NAN), hum(NAN), pres(NAN);
 
 //#define DEBUG
 
@@ -18,14 +39,36 @@ void setup()
 {
   Serial.begin(SERIAL_BAUD);
 
-  while(!Serial) 
-  {
-    // Wait
-  } 
-
-  Wire.begin();
+  // doesn't work on my board (https://arduino.stackexchange.com/questions/65017/arduino-ide-while-serial)
+  // while(!Serial) 
+  // {
+  //   // Wait
+  //   int a = 2;
+  // }
+  delay(2000);
 
   Serial.println("Serial ready!");
+
+  Serial.printf("Starting network (WIFI, SSID [%s])!\n", ssid);
+
+  WiFi.mode(WIFI_AP_STA);
+  WiFi.begin(ssid, password);
+
+  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
+    WiFi.begin(ssid, password);
+    Serial.println("WiFi failed, retrying.");
+  }
+
+  MDNS.begin(host);
+
+  httpUpdater.setup(&httpServer);
+  httpServer.on("/data", web_handle_data);
+  httpServer.begin();
+
+  MDNS.addService("http", "tcp", 80);
+  Serial.printf("HTTPUpdateServer ready! Open http://%s.local/update in your browser (or use IP '%s' instead of '%s' in URL)\n", host, WiFi.localIP().toString().c_str(), host);
+
+  Wire.begin();
 
   while(!bme.begin())
   {
@@ -51,7 +94,7 @@ void setup()
   
   delay(500);    
   
-  Serial.println("Hi");
+  Serial.println("setup() end");
 }
   
 void loop() 
@@ -70,6 +113,9 @@ void loop()
   printBME280Data(&Serial);
    
   delay(100);
+
+  httpServer.handleClient();
+  MDNS.update();
 }
 
 // get the CO2 data
@@ -116,7 +162,6 @@ int get_CO2() {
   
 void printBME280Data(Stream* client)
 {
-   float temp(NAN), hum(NAN), pres(NAN);
 
    BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
    BME280::PresUnit presUnit(BME280::PresUnit_Pa);
@@ -134,4 +179,29 @@ void printBME280Data(Stream* client)
    client->println("Pa");
 
    delay(1000);
+}
+
+void web_handle_data()
+{
+  Serial.println("data request, sending back to client...");
+  char szResponse[256];
+
+  const char * HtmlTemplate =   "<!DOCTYPE html><html><body>"
+                                "<table><tr>"
+                                "<th>CO2</th>"
+                                "<th>Temperature</th>"
+                                "<th>Humidity</th>"
+                                "<th>Pressure</th>"
+                                "</tr>"
+                                "<tr>"
+                                "<td>%d</td>"
+                                "<td>%.2f</td>"
+                                "<td>%.2f</td>"
+                                "<td>%.2f</td>"
+                                "</tr>"
+                                "</table>"
+                                "</body></html>";
+
+  sprintf(szResponse, HtmlTemplate, co2, temp, hum, pres);
+  httpServer.send(200, "text/html", szResponse);
 }
