@@ -199,8 +199,8 @@ void web_handle_data() {
                              "</tr>"
                              "</table>"
                              "</br>"
-                             "<p>CO2: from SA1200P</br>"
-                             "TEMP, HUM, PRESS: from added ESP8266 :-)</p>"
+                             "<p>CO2: from SA1200P using ESP8266</br>"
+                             "TEMP, HUM, PRESS: from BME280 connected to ESP8266</p>"
                              "<p>IP address: %s</p>"
                              "<small>Page reloads every 10 seconds</small>"
                              "</body></html>";

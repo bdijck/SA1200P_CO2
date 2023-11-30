@@ -5,7 +5,11 @@ Basically, we have SA1200P CO2 meter, with an added ESP8266 to 'smartify' the de
 The ESP8266 only gets the CO2 from the SA1200P.
 Temperature, humidity and pressure are taken from an added BME280 sensor that is also connected to the ESP8266.
 
-# Instructions
+Note: ESP8266 uses fixed WIFI-settings (SSID "DijckNoyens_24G"). If this ssid or password would change, code needs to be updated. (Updated firmware can be uploaded using a temporary WIFI SSID/PWD that uses the old setting).
+
+Details: see code
+
+# How to use
 
 http://192.168.1.156/update --> to update firmware over WIFI
 http://192.168.1.156/data --> show CO2, temperature, humidity and pressure
