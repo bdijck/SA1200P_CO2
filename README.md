@@ -17,4 +17,4 @@ http://192.168.1.156/update --> to update firmware over WIFI
 
 http://192.168.1.156/data --> show CO2, temperature, humidity and pressure
 
-Off course, IP address can change.
+Of course, IP address can change.
