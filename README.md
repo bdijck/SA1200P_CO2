@@ -7,7 +7,7 @@ The ESP8266 gets the CO2 from the SA1200P.
 
 Temperature, humidity and pressure are taken from an **added** BME280 sensor that is also connected to the ESP8266.
 
-Note: ESP8266 uses hardcoded WIFI-settings. This means: if the SSID or password would change, code needs to be updated. (Hint: to update the firmware over WiFi, use a _temporary_ WIFI SSID/PWD to match the old setting).
+Note: ESP8266 uses hardcoded WIFI-settings. This means: if the SSID or password would change, code needs to be updated. (Hint to self: to update the firmware after WiFi SSID/PWD changes, _temporary_ use hotspotold with old WIFI SSID/PWD).
 
 Details: see code
 
