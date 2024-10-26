@@ -16,5 +16,3 @@ Details: see code
 http://IP.OF.THE.DEVICE/update --> to update firmware over WIFI
 
 http://IP.OF.THE.DEVICE/data --> show CO2, temperature, humidity and pressure
-
-Of course, IP address can change.
