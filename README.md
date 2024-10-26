@@ -1,5 +1,6 @@
 # SA1200P_CO2
 My spin on smartification of SA1200P CO2 meter (big thanks to weigu.lu)
+![SA1200P CO2 meter](SA1200P.jpg?raw=true "SA1200P CO2 meter")
 
 Basically, we have a SA1200P CO2 meter, with an **added** ESP8266 to 'smartify' the device.
 
